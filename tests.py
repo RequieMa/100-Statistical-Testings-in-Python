@@ -28,7 +28,14 @@ class Test_Statistic:
 
     def which_test(self, test_dict, test_name=None, test_type="Z-Test"):
         self.samples_info = self.samples_list[0] if self.num_sample == 1 else self.samples_list
-        self.populations_info = self.populations_list[0] if self.num_population == 1 else self.populations_list
+        if self.num_population == 1:
+            self.populations_info = self.populations_list[0]
+            if self.populations_info.dist_type == "Poisson":
+                assert self.times_list
+                self.samples_info = [self.samples_info, self.times_list]
+        else:
+            self.populations_info = self.populations_list
+        
         if test_name is None:
             if test_type == "Z-Test":
                 if self.num_sample == 1 and self.num_population == 1:
@@ -50,7 +57,7 @@ class Test_Statistic:
     def calculate_dof(self):
         assert len(self.samples_list) == 2
         sample1, sample2 = self.samples_list
-        n1, n2 = samples1.size, sample2.size
+        n1, n2 = sample1.size, sample2.size
         diff1 = sample1.sample_data - sample1.mean
         diff2 = sample2.sample_data - sample2.mean
         s1_2, s2_2 = diff1 @ diff1 / (n1 - 1.), diff2 @ diff2 / (n2 - 1.)
@@ -113,6 +120,9 @@ class Hypothesis_Test:
         if self.test_type == "Z-Test":
             self.test = self.pdf_func(self.score)
             self.pval = self.sf_func(abs(self.score)) * 2 if self.is_two_tailed else self.sf_func(abs(self.score))
+        elif self.test_type == "T-Test":
+            self.test = self.pdf_func(self.score, self.dof)
+            self.pval = self.sf_func(abs(self.score), self.dof) * 2 if self.is_two_tailed else self.sf_func(abs(self.score), self.dof)
 
         print(f"p-value = {self.pval:.4f}")
         if self.pval > self.criterion:

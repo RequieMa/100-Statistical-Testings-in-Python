@@ -25,6 +25,11 @@ def test_3(two_samples, two_populations):
     sigma1_2, sigma2_2 = population1.var, population2.var
     return ((bar_x1 - bar_x2) - (mu1 - mu2)) / np.sqrt(sigma1_2 / n1 + sigma2_2 / n2)
 
+def test_4(sample, population): 
+    p, p0 = sample.mean, population.mean
+    n = sample.size
+    return  (np.abs(p - p0) - 1 / (2 * n)) / np.sqrt(p0 * (1 - p0) / n)
+
 def test_5(two_samples, dummy):
     samples1, samples2 = two_samples
     p1, p2 = samples1.mean, samples2.mean
@@ -78,7 +83,7 @@ test_dict = {
     "Test_1" : test_1,
     "Test_2" : test_2,
     "Test_3" : test_3,
-    # "Test_4" : lambda sample, population: (abs(sample.mean - population.mean) - 1 / (2 * sample.size)) / np.sqrt(population.mean * (1 - population.mean) / sample.size),
+    "Test_4" : test_4,
     "Test_5" : test_5,
     "Test_6" : test_6,
     "Test_7" : test_7,
