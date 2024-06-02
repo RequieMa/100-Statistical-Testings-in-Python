@@ -71,13 +71,42 @@ def test_9(two_samples, two_populations):
 
 def test_10(two_samples, dummy):
     sample1, sample2 = two_samples
-    bar_x_1, bar_x_2 = sample1.mean, sample2.mean
+    bar_x1, bar_x2 = sample1.mean, sample2.mean
     n = sample1.size
     diff = sample1.sample_data - sample2.sample_data
-    diff_mean = diff.mean()
-    diff_diff = diff - diff_mean
-    s_2 = diff_diff @ diff_diff / (n - 1)
-    return (bar_x_1 - bar_x_2) / np.sqrt(s_2 / n)
+    bar_d1 = diff.mean()
+    d_diff = diff - bar_d1
+    s_2 = d_diff @ d_diff / (n - 1)
+    return (bar_x1 - bar_x2) / np.sqrt(s_2 / n)
+
+def test_11(two_samples, dummy):
+    x, y = two_samples
+    x_data, y_data = x.sample_data, y.sample_data
+    n = x.size
+    sum_xy = x_data @ y_data
+    sum_x_2 = x_data @ x_data
+    x2 = x_data ** 2
+    sum_x = np.sqrt(sum_x_2)
+    sum_y = np.sqrt(y_data @ y_data)
+    sum_x2 = np.sqrt(x2 @ x2)
+    b = (sum_xy - sum_x * sum_y / n) / (sum_x2 - sum_x_2 / n)
+    bar_x, bar_y = x.mean, y.mean
+    diff_x = x_data - bar_x
+    sx_2 = diff_x @ diff_x / (n - 1)
+    diff_y_bx = y_data - bar_y - b * diff_x
+    syx_2 = diff_y_bx @ diff_y_bx / (n - 1)
+    t = b * np.sqrt(sx_2 / syx_2 / (n - 1))
+    return t
+
+def test_12(two_samples, dummy):
+    x, y = two_samples
+    x_data, y_data = x.sample_data, y.sample_data
+    diff_x = x_data - x.mean
+    diff_y = y_data - y.mean
+    n = x.size
+    r = diff_x @ diff_y / np.sqrt(diff_x @ diff_x * diff_y @ diff_y)
+    t = r * np.sqrt((n - 2) / (1 - r * r))
+    return t
 
 test_dict = {
     "Test_1" : test_1,
@@ -90,4 +119,6 @@ test_dict = {
     "Test_8" : test_8,
     "Test_9" : test_9,
     "Test_10" : test_10,
+    "Test_11" : test_11,
+    "Test_12" : test_12,
 }

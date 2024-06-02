@@ -25,6 +25,7 @@ test_type_dict = {
 class Test_Statistic:
     def __init__(self):
         self.test_statistic_clear()
+        self.rho = None
 
     def which_test(self, test_dict, test_name=None, test_type="Z-Test"):
         self.samples_info = self.samples_list[0] if self.num_sample == 1 else self.samples_list
@@ -35,6 +36,8 @@ class Test_Statistic:
                 self.samples_info = [self.samples_info, self.times_list]
         else:
             self.populations_info = self.populations_list
+            if self.rho:
+                self.samples_info = [self.samples_info, self.rho]
         
         if test_name is None:
             if test_type == "Z-Test":
@@ -47,9 +50,12 @@ class Test_Statistic:
         print(f"Carry out test {test_key}...")
 
     def test_statistic(self):
-        assert self.test and self.samples_info and self.populations_info
+        assert self.test and self.samples_info
         return self.test(self.samples_info, self.populations_info)
 
+    def rho_for_correlation(self, rho):
+        self.rho = rho
+    
     def time_value_push(self, times_list):
         self.times_list = times_list
         assert len(self.times_list) == len(self.samples_list)
